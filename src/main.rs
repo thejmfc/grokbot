@@ -7,7 +7,6 @@ use dotenv::dotenv;
 async fn main() {
     dotenv().ok();
 
-    let llm = ollama::setup();
     let mut client = discord::setup().await;
     if let Err(why) = client.start_autosharded().await {
         println!("Client error: {why:?}");

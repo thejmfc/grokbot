@@ -1,11 +1,13 @@
 use std::env;
-use std::fmt;
 
 use serenity::async_trait;
 use serenity::gateway::ActivityData;
+use serenity::http::Typing;
 use serenity::model::channel::Message;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
+
+use crate::ollama;
 
 struct Handler;
 
@@ -13,10 +15,19 @@ struct Handler;
 impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
         let bot_id = ctx.cache.current_user().id.to_string();
-        if msg.content.starts_with(&format!("<@{bot_id}> ping")) {
-            if let Err(why) = msg.channel_id.say(&ctx.http, "Pong!").await {
+        let prefix = format!("<@{bot_id}>");
+
+        if msg.content.starts_with(&prefix) {
+            let typing = Typing::start(ctx.http.clone(), msg.channel_id);
+
+            let prompt = msg.content.strip_prefix(&prefix).unwrap().to_string();
+            let response = ollama::ask(prompt).await;
+
+            if let Err(why) = msg.channel_id.say(&ctx.http, response).await {
                 println!("Error sending message: {why:?}");
             }
+
+            typing.stop();
         }
     }
 

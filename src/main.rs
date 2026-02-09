@@ -9,7 +9,7 @@ async fn main() {
 
     let llm = ollama::setup();
     let mut client = discord::setup().await;
-    if let Err(why) = client.start().await {
+    if let Err(why) = client.start_autosharded().await {
         println!("Client error: {why:?}");
     }
 }

@@ -42,7 +42,7 @@ pub async fn setup() -> Client {
 
     Client::builder(&token, intents)
         .event_handler(Handler)
-        .activity(ActivityData::watching("Watching Israel bomb a school 🍿"))
+        .activity(ActivityData::watching("Glory to Elon Musk 🇮🇱"))
         .await
         .expect("Err creating client")
 }

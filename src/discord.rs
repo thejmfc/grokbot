@@ -1,4 +1,6 @@
 use std::env;
+use std::fmt;
+
 use serenity::async_trait;
 use serenity::gateway::ActivityData;
 use serenity::model::channel::Message;
@@ -10,8 +12,8 @@ struct Handler;
 #[async_trait]
 impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
-        // Ping pong
-        if msg.content == "!ping" {
+        let bot_id = ctx.cache.current_user().id.to_string();
+        if msg.content.starts_with(&format!("<@{bot_id}> ping")) {
             if let Err(why) = msg.channel_id.say(&ctx.http, "Pong!").await {
                 println!("Error sending message: {why:?}");
             }

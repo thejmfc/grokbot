@@ -20,7 +20,7 @@ After cloning the repository, you should copy `.env.example` to `.env` and popul
 
 To pack the Helm chart, run the following commands:
 ```bash
-cd charts
+cd docs
 helm package grokbot
 helm repo index . --url https://thejmfc.github.io/grokbot
 ```

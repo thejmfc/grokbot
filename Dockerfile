@@ -1,4 +1,4 @@
-FROM rust:1.93.0 as builder
+FROM rust:1.93.0 AS builder
 
 ARG version="dev"
 ARG revision="dev"
@@ -17,7 +17,7 @@ WORKDIR /build
 COPY . /build
 RUN cargo build --release
 
-FROM alpine:latest as runner
+FROM alpine:latest AS runner
 
 WORKDIR /app
 COPY --from=builder /build/target/release/grokbot /app

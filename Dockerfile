@@ -1,4 +1,4 @@
-FROM rust:1.93.0-alpine as builder
+FROM rust:1.93.0 as builder
 
 ARG version="dev"
 ARG revision="dev"
@@ -13,27 +13,13 @@ LABEL org.opencontainers.image.title="GrokBot"
 LABEL org.opencontainers.image.url="https://github.com/thejmfc/grokbot"
 LABEL org.opencontainers.image.version=$version
 
-# Creates a new empty project
-RUN USER=root cargo new --bin grokbot
-WORKDIR /grokbot
-
-# Copies over Cargo files
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
-
-# Caches dependencies
-RUN cargo build --release
-RUN rm src/*.rs
-
-# Copy over source code
-COPY ./src ./src
-
-# Build release from source code
-RUN rm ./target/release/deps/grokbot*
+WORKDIR /build
+COPY . /build
 RUN cargo build --release
 
-FROM rust:1.93.0-alpine as runner
+FROM alpine:latest as runner
 
-COPY --from=builder /grokbot/target/release/grokbot .
+WORKDIR /app
+COPY --from=builder /build/target/release/grokbot /app
 
-CMD ["./grokbot"]
+CMD ["/app/grokbot"]

@@ -20,6 +20,6 @@ RUN cargo build --release
 FROM alpine:latest AS runner
 
 WORKDIR /app
-COPY --from=builder /build/target/release/grokbot /app
+COPY --from=builder /build/target/release /app
 
 CMD ["/app/grokbot"]

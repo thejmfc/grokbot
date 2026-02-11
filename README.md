@@ -16,7 +16,17 @@ For now, all configuration is done via environment variables.
 A `.env.example` file is provided to show you which variables are required.
 After cloning the repository, you should copy `.env.example` to `.env` and populate the file with your own values.
 
-## Packing Helm Chart
+## Helm Chart
+
+### Install via Helm
+
+```bash
+helm repo add grokbot https://thejmfc.github.io/grokbot
+helm repo update
+helm install grokbot grokbot
+```
+
+### Packing Helm Chart
 
 To pack the Helm chart, run the following commands:
 ```bash

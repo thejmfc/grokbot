@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  grokbot:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-02-11T21:04:09.909383Z"
+    description: Helm chart for deploying Grokbot.
+    digest: 463c12903d580cf2588e90d795ddf294f3f8752d3c1889e34319d810c48c1973
+    name: grokbot
+    type: application
+    urls:
+    - https://thejmfc.github.io/grokbot/grokbot-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-02-11T21:04:09.907311Z"

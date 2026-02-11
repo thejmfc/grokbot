@@ -1,0 +1,60 @@
+discord:
+  token: ""
+  status: "Grok and Roll"
+  prefix: "!"
+
+ollama:
+  url: "http://localhost:11434"
+  model: "llama3.2:latest"
+  systemPrompt: "You are Grok"
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/thejmfc/grokbot
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe: {}
+readinessProbe: {}
+
+volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+
+volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

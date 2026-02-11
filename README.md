@@ -15,3 +15,12 @@ cargo run
 For now, all configuration is done via environment variables.
 A `.env.example` file is provided to show you which variables are required.
 After cloning the repository, you should copy `.env.example` to `.env` and populate the file with your own values.
+
+## Packing Helm Chart
+
+To pack the Helm chart, run the following commands:
+```bash
+cd charts
+helm package grokbot
+helm repo index . --url https://thejmfc.github.io/grokbot
+```

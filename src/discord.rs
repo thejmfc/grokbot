@@ -1,5 +1,6 @@
 use std::env;
-use std::string::ToString;
+use ollama_rs::generation::chat::ChatMessage;
+use serenity::all::MessageReference;
 use serenity::async_trait;
 use serenity::gateway::ActivityData;
 use serenity::http::Typing;
@@ -8,48 +9,49 @@ use serenity::model::gateway::Ready;
 use serenity::prelude::*;
 
 use crate::ollama;
+use crate::utils;
 
 struct Handler;
 
-const PREFIX: &str = "<@1470419785576878164> ";
+pub const PREFIX: &str = "<@1470419785576878164> ";
 
 #[async_trait]
 impl EventHandler for Handler {
-    async fn ready(&self, _: Context, ready: Ready) {
-        println!("{} is connected!", ready.user.name);
-    }
-
     async fn message(&self, ctx: Context, msg: Message) {
         if msg.content.starts_with(&PREFIX) {
             let typing = Typing::start(ctx.http.clone(), msg.channel_id);
-            let prompt = msg.content.strip_prefix(&PREFIX).unwrap().to_string();
-            let msg_ref = msg.message_reference.clone();
+            let chat = utils::msg_to_chat(msg.clone()).await;
+            let history = ref_to_chat(&ctx, msg.message_reference.clone()).await;
 
-            if msg_ref.is_some() {
-                let unwrapped_ref = msg_ref.unwrap();
-                let ctx_msg = ctx.http
-                    .get_message(unwrapped_ref.channel_id, unwrapped_ref.message_id.unwrap())
-                    .await
-                    .expect("Couldn't fetch referenced message");
-
-                answer(&ctx, &msg, prompt, ctx_msg.content).await;
-            } else {
-                answer(&ctx, &msg, prompt, "".to_string()).await;
+            let response = ollama::ask(chat, history).await;
+            if let Err(why) = msg.reply_ping(&ctx.http, response).await {
+                println!("Error sending message: {why:?}");
             }
 
             typing.stop();
         }
     }
-}
 
-async fn answer(ctx: &Context, msg: &Message, prompt: String, context: String) {
-    let response = ollama::ask(prompt, context).await;
-    if let Err(why) = msg.reply_ping(&ctx.http, response).await {
-        println!("Error sending message: {why:?}");
+    async fn ready(&self, _: Context, ready: Ready) {
+        println!("{} is connected!", ready.user.name);
     }
 }
 
-pub async fn setup() -> Client {
+async fn ref_to_chat(ctx: &Context, reference: Option<MessageReference>) -> Option<ChatMessage> {
+    if reference.is_some() {
+        let unwrapped = reference.unwrap();
+        let msg = ctx.http
+            .get_message(unwrapped.channel_id, unwrapped.message_id.unwrap())
+            .await
+            .expect("Couldn't fetch referenced message");
+
+        Option::from(utils::msg_to_chat(msg).await)
+    } else {
+        None
+    }
+}
+
+pub async fn new() -> Client {
     let token = env::var("DISCORD_TOKEN").expect("Expected a Discord token in the environment");
     let intents = GatewayIntents::GUILD_MESSAGES | GatewayIntents::MESSAGE_CONTENT;
 

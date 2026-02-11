@@ -1,3 +1,4 @@
+mod config;
 mod discord;
 mod ollama;
 mod utils;

@@ -4,7 +4,7 @@ use ollama_rs::generation::images::Image;
 use reqwest::get;
 use serenity::all::Message;
 
-use crate::discord;
+use crate::config;
 
 pub async fn download_image(url: &str) -> Result<Image, reqwest::Error> {
     let response = get(url).await?;
@@ -27,7 +27,7 @@ pub async fn msg_to_chat(msg: Message) -> ChatMessage {
 }
 
 pub fn strip_prefix(s: String) -> String {
-    s.strip_prefix(discord::PREFIX)
+    s.strip_prefix(config::discord_prefix().as_str())
         .unwrap_or(s.as_str())
         .to_string()
 }

@@ -1,4 +1,3 @@
-use std::env;
 use ollama_rs::generation::chat::ChatMessage;
 use serenity::all::MessageReference;
 use serenity::async_trait;
@@ -8,17 +7,16 @@ use serenity::model::channel::Message;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
 
+use crate::config;
 use crate::ollama;
 use crate::utils;
 
 struct Handler;
 
-pub const PREFIX: &str = "<@1470419785576878164> ";
-
 #[async_trait]
 impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
-        if msg.content.starts_with(&PREFIX) {
+        if msg.content.starts_with(config::discord_prefix().as_str()) {
             let typing = Typing::start(ctx.http.clone(), msg.channel_id);
             let chat = utils::msg_to_chat(msg.clone()).await;
             let history = ref_to_chat(&ctx, msg.message_reference.clone()).await;
@@ -52,12 +50,10 @@ async fn ref_to_chat(ctx: &Context, reference: Option<MessageReference>) -> Opti
 }
 
 pub async fn new() -> Client {
-    let token = env::var("DISCORD_TOKEN").expect("Expected a Discord token in the environment");
     let intents = GatewayIntents::GUILD_MESSAGES | GatewayIntents::MESSAGE_CONTENT;
-
-    Client::builder(&token, intents)
+    Client::builder(config::discord_token(), intents)
         .event_handler(Handler)
-        .activity(ActivityData::watching("Glory to Elon Musk 🇮🇱"))
+        .activity(ActivityData::watching(config::discord_status()))
         .await
-        .expect("Err creating client")
+        .expect("Error creating discord client")
 }

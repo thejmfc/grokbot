@@ -17,9 +17,10 @@ WORKDIR /build
 COPY . /build
 RUN cargo build --release
 
-FROM alpine:latest AS runner
+FROM debian AS runner
 
 WORKDIR /app
-COPY --from=builder /build/target/release /app
+COPY --from=builder /build/target/release/grokbot ./
+RUN chmod +x /app/grokbot
 
 CMD ["/app/grokbot"]

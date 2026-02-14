@@ -19,6 +19,8 @@ RUN cargo build --release
 
 FROM debian AS runner
 
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
+
 WORKDIR /app
 COPY --from=builder /build/target/release/grokbot ./
 RUN chmod +x /app/grokbot
